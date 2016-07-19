@@ -48,7 +48,7 @@ server <- function(input, output, session) {
     {
       descr = project_description_file(path)
 
-      tg = shinydashboard::box(title = sprintf("%s",nm), width = 4,
+      tg = shinydashboard::box(title = sprintf("%s",nm), width = 12,
                           h3(sprintf("Last mod time: %s", lastMod[[2]])),
                           descr,
                           h3(sprintf("Path: %s",path), style = "word-break: break-all;"),
