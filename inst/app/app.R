@@ -10,6 +10,9 @@ ui <- dashboardPage(
   dashboardHeader(),
   dashboardSidebar(sidebarMenu(menuItem("Blocks", tabName = "blocks", icon = icon("th")))),
   dashboardBody(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+    ),
     bsModal("aceNotes", "Edit project notes", trigger = "tmp",
             verbatimTextOutput("editFilePath"),
             uiOutput("aceEditorUI")
@@ -54,11 +57,11 @@ server <- function(input, output, session) {
                           h3(sprintf("Path: %s",path), style = "word-break: break-all;"),
                           h4(sprintf("Last modified file: %s", lastMod[[1]]),style = "word-break: break-all;"),
                           h2("Notes:"),
-                          verbatimTextOutput(paste0(nm,"NotesText")),
+                          div(uiOutput(paste0(nm,"NotesText")), style = "background: #DDE3EA;"),
                           actionButton(paste0(nm,"Notes"), "Edit notes"),
                           project_description_full(path),
                           project_rmd_modal(path,"README"),
-                          project_rmd_modal(path,"NEWS"))
+                          project_rmd_modal(path,"NEWS"), collapsible = TRUE)
 
       tg
     },nmAll,prAll,lastModTimeFrames, SIMPLIFY = FALSE)
@@ -85,9 +88,9 @@ server <- function(input, output, session) {
 
       if(file.exists(notes))
       {
-        txt = readLines(notes, warn = FALSE)
-        txt = paste(txt, collapse = "\n")
-        output[[paste0(id,"Text")]] = renderText({txt})
+        #txt = readLines(notes, warn = FALSE)
+        #txt = paste(txt, collapse = "\n")
+        output[[paste0(id,"Text")]] = renderUI({includeMarkdown(notes)})#renderText({txt})})
       }
 
       input[[id]]
@@ -132,9 +135,9 @@ server <- function(input, output, session) {
     isolate({
     if(is.null(edited$edited) || edited$edited == ButtonsLastVals$id)
     {
-      output[[ButtonsLastVals$id]] = renderText({ txt })
-
       cat(paste0(txt,"\n"), file = ButtonsLastVals$path)
+      output[[ButtonsLastVals$id]] = renderUI({includeMarkdown(ButtonsLastVals$path)})
+
     }})
 
     edited$edited = ButtonsLastVals$id
